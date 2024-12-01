@@ -21,7 +21,10 @@ EOF
 echo "文件 '$file_path' 已成功创建并初始化。"
 
 # 打开文件
-$editor_path $file_path
+$editor_path $file_path &
+
+# 且
+
 
 # 退出控制台
 exit
