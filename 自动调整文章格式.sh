@@ -12,17 +12,14 @@ sed -i 's|\.\.\\img\\|https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog
 echo "文件 '$file_path' 中的图片链接已更新。"
 
 # 从文件中提取title和date
-#title=$(grep '^title:' "$filefile_path" | sed 's/^title: *"$.*$"$/\1/')
-#echo $title
-# date=$(grep '^date:' "$filefile_path" | sed 's/date: "$.*$"$/\1/')
+title=$(grep 'title' $file_path | sed 's/.*"\(.*\)".*/\1/')
+echo $title
+date=$(grep 'date' $file_path | sed 's/.*: //')
+echo $date
 
 # 构建新文件名
-# new_filename="${date}-${title}.md"
-
-# 移除标题中的非法字符（如空格、特殊符号等）
-# new_filename=$(echo $new_filename | tr -c '[:alnum:].-' '_' | sed 's/_-/_/g' | sed 's/-_/-/g' | sed 's/^_//' | sed 's/_$//')
+new_filename="./_posts/${date}-${title}.md"
+echo $new_filename
 
 # 重命名文件
-# mv "$file_path" "${new_filename}"
-
-# 如果需要，可以在此处添加其他操作，如提交到 Git 仓库等
+mv "$file_path" "${new_filename}"
