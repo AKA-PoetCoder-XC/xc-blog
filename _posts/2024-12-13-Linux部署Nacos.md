@@ -1,6 +1,11 @@
 ---
 title: "Linux部署Nacos"
 date: 2024-12-13
+layout: post
+tags: [linux, nacos]
+category: 运维
+author: XieChen
+toc:  true
 ---
 
 学习链接：https://blog.csdn.net/xhmico/article/details/136647509
