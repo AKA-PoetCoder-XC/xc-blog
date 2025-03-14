@@ -1,6 +1,6 @@
 # Setup
-title: XC-BLOG
-description: 谢小土的个人博客
+title: Not Pure Poole
+description: A simple, beautiful, and powerful Jekyll theme for blogs
 url: https://vszhub.github.io
 avatar: /avatar.jpeg
 paginate: 5
@@ -54,6 +54,6 @@ sass:
 
 # Specify the author for blog posts
 author:
-  name: XieChen
-  url: https://github.com/AKA-PoetCoder-XC
-  email: a1577403106@gmail.com
+  name: Songzi Vong
+  url: https://github.com/vszhub/
+  email: vszhub@gmail.com
