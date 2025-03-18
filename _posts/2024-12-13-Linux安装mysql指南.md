@@ -1,6 +1,11 @@
 ---
 title: "Linux安装mysql指南"
 date: 2024-12-13
+layout: post
+tags: [linux, mysql]
+category: 运维
+author: XieChen
+toc:  true
 ---
 
 
