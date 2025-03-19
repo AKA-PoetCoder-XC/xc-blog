@@ -13,7 +13,12 @@ editor_path="D:/Typora/Typora.exe"
 cat <<EOF > "$file_path"
 ---
 title: "新标题"
+layout: post
 date: $current_date
+tags: [未知]
+category: [未知]
+author: XieChen
+toc:  true
 ---
 EOF
 
