@@ -251,7 +251,7 @@ flush privileges;
 show master status;
 ```
 
-![image-20250319193635074](D:\XieChen\project-xc\xc-blog\img\image-20250319193635074.png)
+![image-20250319193635074](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20250319193635074.png)
 
 如图所示，**File = master-bin.000004, Position = 749**
 
@@ -274,7 +274,7 @@ docker inspect --format='{{.NetworkSettings.Networks.global_default.IPAddress}}'
  mysql-master-3307
 ```
 
-![image-20250319195217434](D:\XieChen\project-xc\xc-blog\img\image-20250319195217434.png)
+![image-20250319195217434](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20250319195217434.png)
 
 如图所示，**mysql-master-3307的ip为 172.20.0.3**
 
@@ -308,7 +308,7 @@ show slave status\G;
 
 1 master_host表示master容器的ip，非宿主机ip，如下图所示：
 
-![image-20250319195217434](D:\XieChen\project-xc\xc-blog\img\image-20250319195217434.png)
+![image-20250319195217434](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20250319195217434.png)
 
 2 master_port表示master容器内的mysql端口号3306，非宿主机给master容器分配的端口号3307
 
@@ -318,7 +318,7 @@ show slave status\G;
 
 5 master_log_file就是在master容器中进入mysql用show master status命令查出来的File值，master_log_pos是该命令查出来对应的Position值，如下图所示：
 
-![image-20250319193635074](D:\XieChen\project-xc\xc-blog\img\image-20250319193635074.png)
+![image-20250319193635074](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20250319193635074.png)
 
 
 
