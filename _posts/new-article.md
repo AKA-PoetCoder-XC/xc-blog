@@ -226,7 +226,7 @@ cat > /data/docker/app/nacos/nacos-standalone-8842/docker-compose.yml << 'EOF'
 version: '3'
 
 services:
-  nacos:
+  nacos-standalone-8842:
     image: nacos/nacos-server
     container_name: nacos-standalone-8842
     environment:
@@ -281,19 +281,18 @@ mkdir -p /data/docker/app/nacos/{nacos-cluster-8844,nacos-cluster-8846,nacos-clu
 
 #### 3.2.1 第一个节点
 
-```
+```shell
 cat > /data/docker/app/nacos/nacos-cluster-8844/docker-compose.yml << 'EOF'
 version: '3'
 
 services:
-  nacos:
+  nacos-cluster-8844:
     image: nacos/nacos-server
     container_name: nacos-cluster-8844
     environment:
       - MODE=cluster
       - NACOS_SERVER="172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848"
       - PREFER_HOST_MODE=ip
-      - MODE=standalone
       - SPRING_DATASOURCE_PLATFORM=mysql
       - MYSQL_SERVICE_HOST=172.22.48.227
       - MYSQL_SERVICE_PORT=3307
@@ -312,19 +311,18 @@ EOF
 
 #### 3.2.2 第二个节点
 
-```
+```shell
 cat > /data/docker/app/nacos/nacos-cluster-8846/docker-compose.yml << 'EOF'
 version: '3'
 
 services:
-  nacos:
+  nacos-cluster-8846:
     image: nacos/nacos-server
     container_name: nacos-cluster-8846
     environment:
       - MODE=cluster
       - NACOS_SERVER="172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848"
       - PREFER_HOST_MODE=ip
-      - MODE=standalone
       - SPRING_DATASOURCE_PLATFORM=mysql
       - MYSQL_SERVICE_HOST=172.22.48.227
       - MYSQL_SERVICE_PORT=3307
@@ -343,19 +341,18 @@ EOF
 
 #### 3.2.1 第三个节点
 
-```
+```shell
 cat > /data/docker/app/nacos/nacos-cluster-8848/docker-compose.yml << 'EOF'
 version: '3'
 
 services:
-  nacos:
+  nacos-cluster-8848:
     image: nacos/nacos-server
     container_name: nacos-cluster-8848
     environment:
       - MODE=cluster
       - NACOS_SERVER="172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848"
       - PREFER_HOST_MODE=ip
-      - MODE=standalone
       - SPRING_DATASOURCE_PLATFORM=mysql
       - MYSQL_SERVICE_HOST=172.22.48.227
       - MYSQL_SERVICE_PORT=3307
@@ -376,7 +373,7 @@ EOF
 
 备注：如果没有可以自己建立一个全局的docker-compose.yml用于管理需要一起启动的节点
 
-```
+```shell
 version: '3'
 
 services:
@@ -407,7 +404,7 @@ services:
 
 ## 4 在全局配置管理中启动所有的节点
 
-```
+```shell
 docker-compose -f /data/docker/app/global/docker-compose.yml up -d
 ```
 
