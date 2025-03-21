@@ -27,13 +27,13 @@ docker pull mysql:5.7
 创建一个目录作为master容器的挂载目录，conf目录挂载配置文件，data目录挂载数据，**新增不同端口的容器只需要在/data/docker/app/mysql目录下新增"容器名+端口号/{conf,data}"目录**，这样命名方便根据不同端口号的容器来查找对应的配置文件和数据
 
 ```shell
-mkdir -p /data/docker/app/mysql/master-3307/{conf,data}
+mkdir -p /data/docker/app/mysql/mysql-master-3307/{conf,data}
 ```
 
 #### 2.2 创建slave容器挂载目录
 
 ```shell
-mkdir -p /data/docker/app/mysql/slave-3308/{conf,data}
+mkdir -p /data/docker/app/mysql/mysql-slave-3308/{conf,data}
 ```
 
 ### 3 创建测试容器，拷贝并修改配置文件
@@ -47,7 +47,7 @@ docker run -itd -p 3307:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root -d mysql:5
 #### 3.2 将测试容器的配置文件拷贝到master容器的conf中
 
 ```
-docker cp mysql:/etc/my.cnf /data/docker/app/mysql/master-3307/conf
+docker cp mysql:/etc/my.cnf /data/docker/app/mysql/mysql-master-3307/conf
 ```
 
 #### 3.3 删掉刚启动的测试容器
@@ -59,7 +59,7 @@ docker rm -f mysql
 #### 3.4 拷贝master容器的配置文件生成slave容器的配置文件
 
 ```shell
-cp -r /data/docker/app/mysql/master-3307/conf/my.cnf /data/docker/app/mysql/slave-3308/conf/my.cnf
+cp -r /data/docker/app/mysql/mysql-master-3307/conf/my.cnf /data/docker/app/mysql/mysql-slave-3308/conf/my.cnf
 ```
 
 #### 3.5 修改配置文件
@@ -68,7 +68,7 @@ cp -r /data/docker/app/mysql/master-3307/conf/my.cnf /data/docker/app/mysql/slav
 
 ```shell
 ## 修改master配置
-vim /data/docker/app/mysql/master-3307/conf/my.cnf
+vim /data/docker/app/mysql/mysql-master-3307/conf/my.cnf
 ```
 
 ```properties
@@ -90,7 +90,7 @@ binlog-ignore-db=sys
 
 ```shell
 ## 修改slave配置
-vim /data/docker/app/mysql/slave-3308/conf/my.cnf
+vim /data/docker/app/mysql/mysql-slave-3308/conf/my.cnf
 ```
 
 ```properties
@@ -113,7 +113,7 @@ log-bin=slave-bin
 #### 4.1 编写master容器的docker-compose.yml
 
 ```yml
-cat > /data/docker/app/mysql/master-3307/docker-compose.yml << 'EOF'
+cat > /data/docker/app/mysql/mysql-master-3307/docker-compose.yml << 'EOF'
 version: '3'
 
 x-master-service: &master-config
@@ -122,8 +122,8 @@ x-master-service: &master-config
   ports:
     - "3307:3306"
   volumes:
-    - /data/docker/app/mysql/master-3307/conf/my.cnf:/etc/my.cnf
-    - /data/docker/app/mysql/master-3307/data:/var/lib/mysql
+    - /data/docker/app/mysql/mysql-master-3307/conf/my.cnf:/etc/my.cnf
+    - /data/docker/app/mysql/mysql-master-3307/data:/var/lib/mysql
   environment:
     - MYSQL_ROOT_PASSWORD=root
     - TZ=Asia/Shanghai
@@ -149,7 +149,7 @@ EOF
 #### 4.2 编写slave容器的docker-compose.yml
 
 ```yml
-cat > /data/docker/app/mysql/slave-3308/docker-compose.yml << 'EOF'
+cat > /data/docker/app/mysql/mysql-slave-3308/docker-compose.yml << 'EOF'
 version: '3'
 
 x-slave-service: &slave-config
@@ -158,8 +158,8 @@ x-slave-service: &slave-config
   ports:
     - "3308:3306"
   volumes:
-    - /data/docker/app/mysql/slave-3308/conf/my.cnf:/etc/my.cnf
-    - /data/docker/app/mysql/slave-3308/data:/var/lib/mysql
+    - /data/docker/app/mysql/mysql-slave-3308/conf/my.cnf:/etc/my.cnf
+    - /data/docker/app/mysql/mysql-slave-3308/data:/var/lib/mysql
   environment:
     - MYSQL_ROOT_PASSWORD=root
     - TZ=Asia/Shanghai
@@ -193,11 +193,11 @@ version: '3'
 services:
   mysql-master-3307:
     extends:
-      file: /data/docker/app/mysql/master-3307/docker-compose.yml
+      file: /data/docker/app/mysql/mysql-master-3307/docker-compose.yml
       service: mysql-master-3307
   mysql-slave-3308:
     extends:
-      file: /data/docker/app/mysql/slave-3308/docker-compose.yml
+      file: /data/docker/app/mysql/mysql-slave-3308/docker-compose.yml
       service: mysql-slave-3308
       
 EOF
@@ -270,8 +270,7 @@ exit
 # 情况1，容器能查到独立ip
 docker inspect --format='{{.NetworkSettings.Networks.IPAddress}}' mysql-master-3307
 # 情况2，如果上面的指令未查到ip，则查全局默认的ip
-docker inspect --format='{{.NetworkSettings.Networks.global_default.IPAddress}}'
- mysql-master-3307
+docker inspect --format='{{.NetworkSettings.Networks.global_default.IPAddress}}' mysql-master-3307
 ```
 
 ![image-20250319195217434](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20250319195217434.png)
