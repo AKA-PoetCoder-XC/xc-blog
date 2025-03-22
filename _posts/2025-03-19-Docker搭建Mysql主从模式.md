@@ -46,7 +46,7 @@ docker run -itd -p 3307:3306 --name mysql -e MYSQL_ROOT_PASSWORD=root -d mysql:5
 
 #### 3.2 将测试容器的配置文件拷贝到master容器的conf中
 
-```
+```shell
 docker cp mysql:/etc/my.cnf /data/docker/app/mysql/mysql-master-3307/conf
 ```
 
@@ -114,8 +114,6 @@ log-bin=slave-bin
 
 ```yml
 cat > /data/docker/app/mysql/mysql-master-3307/docker-compose.yml << 'EOF'
-version: '3'
-
 x-master-service: &master-config
   image: mysql:5.7
   container_name: mysql-master-3307
@@ -150,8 +148,6 @@ EOF
 
 ```yml
 cat > /data/docker/app/mysql/mysql-slave-3308/docker-compose.yml << 'EOF'
-version: '3'
-
 x-slave-service: &slave-config
   image: mysql:5.7
   container_name: mysql-slave-3308
@@ -180,16 +176,9 @@ EOF
 
 #### 4.3 编写全局docker-compose.yml
 
-```
-# 创建全局配置目录
-mkdir /data/docker/global
-```
-
 ```yml
 # 创建全局docker-compose.yml文件
-cat > /data/docker/global/docker-compose.yml << 'EOF'
-version: '3'
-
+cat > /data/docker/app/mysql/docker-compose.yml << 'EOF'
 services:
   mysql-master-3307:
     extends:
@@ -209,7 +198,7 @@ EOF
 
 ```shell
 # 进入全局管理目录
-cd /data/docker/global
+cd /data/docker/app/mysql
 ```
 
 ```shell

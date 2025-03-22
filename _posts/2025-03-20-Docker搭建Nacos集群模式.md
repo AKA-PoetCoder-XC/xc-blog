@@ -233,7 +233,7 @@ services:
       - PREFER_HOST_MODE=ip
       - MODE=standalone
       - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=172.22.48.227
+      - MYSQL_SERVICE_HOST=172.26.48.227
       - MYSQL_SERVICE_PORT=3307
       - MYSQL_SERVICE_DB_NAME=nacos_config
       - MYSQL_SERVICE_USER=root
@@ -279,33 +279,38 @@ mkdir -p /data/docker/app/nacos/{nacos-cluster-8844,nacos-cluster-8846,nacos-clu
 
 ### 3.2 创建并编写docker-compose.yml文件
 
+3.2.1 全局环境变量配置
+
+```
+# 注意：NACOS_SERVERS、MYSQL_SERVICE_HOST、MYSQL_SERVICE_PORT中的ip和端口号要根据时间情况来配置
+NACOS_SERVERS=172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848
+SPRING_DATASOURCE_PLATFORM=mysql
+MYSQL_SERVICE_HOST=172.22.48.227
+MYSQL_SERVICE_DB_NAME=nacos_config
+MYSQL_SERVICE_PORT=3307
+MYSQL_SERVICE_USER=root
+MYSQL_SERVICE_PASSWORD=root
+JVM_XMS=128m
+JVM_XMX=128m
+JVM_XMN=128m
+```
+
+
+
 #### 3.2.1 第一个节点
 
 ```shell
 cat > /data/docker/app/nacos/nacos-cluster-8844/docker-compose.yml << 'EOF'
-version: '3'
-
 services:
   nacos-cluster-8844:
     image: nacos/nacos-server
     container_name: nacos-cluster-8844
-    environment:
-      - MODE=cluster
-      - NACOS_SERVER="172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848"
-      - PREFER_HOST_MODE=ip
-      - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=172.22.48.227
-      - MYSQL_SERVICE_PORT=3307
-      - MYSQL_SERVICE_DB_NAME=nacos_config
-      - MYSQL_SERVICE_USER=root
-      - MYSQL_SERVICE_PASSWORD=root
-      - JVM_XMS=256m
-      - JVM_XMX=256m
-      - JVM_XMN=256m
     ports:
       - "8844:8848"
-    privileged: true
-    restart: always
+      - "9844:9848"
+    env_file:
+      - /data/docker/app/nacos/nacos-cluster.env
+    restart: on-failure
 EOF
 ```
 
@@ -313,29 +318,16 @@ EOF
 
 ```shell
 cat > /data/docker/app/nacos/nacos-cluster-8846/docker-compose.yml << 'EOF'
-version: '3'
-
 services:
   nacos-cluster-8846:
     image: nacos/nacos-server
     container_name: nacos-cluster-8846
-    environment:
-      - MODE=cluster
-      - NACOS_SERVER="172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848"
-      - PREFER_HOST_MODE=ip
-      - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=172.22.48.227
-      - MYSQL_SERVICE_PORT=3307
-      - MYSQL_SERVICE_DB_NAME=nacos_config
-      - MYSQL_SERVICE_USER=root
-      - MYSQL_SERVICE_PASSWORD=root
-      - JVM_XMS=256m
-      - JVM_XMX=256m
-      - JVM_XMN=256m
     ports:
       - "8846:8848"
-    privileged: true
-    restart: always
+      - "9846:9848"
+    env_file:
+      - /data/docker/app/nacos/nacos-cluster.env
+    restart: on-failure
 EOF
 ```
 
@@ -343,29 +335,16 @@ EOF
 
 ```shell
 cat > /data/docker/app/nacos/nacos-cluster-8848/docker-compose.yml << 'EOF'
-version: '3'
-
 services:
   nacos-cluster-8848:
     image: nacos/nacos-server
     container_name: nacos-cluster-8848
-    environment:
-      - MODE=cluster
-      - NACOS_SERVER="172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848"
-      - PREFER_HOST_MODE=ip
-      - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=172.22.48.227
-      - MYSQL_SERVICE_PORT=3307
-      - MYSQL_SERVICE_DB_NAME=nacos_config
-      - MYSQL_SERVICE_USER=root
-      - MYSQL_SERVICE_PASSWORD=root
-      - JVM_XMS=256m
-      - JVM_XMX=256m
-      - JVM_XMN=256m
     ports:
       - "8848:8848"
-    privileged: true
-    restart: always
+      - "9848:9848"
+    env_file:
+      - /data/docker/app/nacos/nacos-cluster.env
+    restart: on-failure
 EOF
 ```
 
@@ -374,37 +353,27 @@ EOF
 备注：如果没有可以自己建立一个全局的docker-compose.yml用于管理需要一起启动的节点
 
 ```shell
-version: '3'
-
+# 创建全局docker-compose.yml文件
+cat > /data/docker/app/nacos/docker-compose.yml << 'EOF'
 services:
-  mysql-master-3307:
-    extends:
-      file: /data/docker/app/mysql/mysql-master-3307/docker-compose.yml
-      service: mysql-master-3307
-      
-  mysql-slave-3308:
-    extends:
-      file: /data/docker/app/mysql/mysql-slave-3308/docker-compose.yml
-      service: mysql-slave-3308
   nacos-cluster-8844:
     extends:
       file: /data/docker/app/nacos/nacos-cluster-8844/docker-compose.yml
       service: nacos-cluster-8844
-      
   nacos-cluster-8846:
     extends:
       file: /data/docker/app/nacos/nacos-cluster-8846/docker-compose.yml
       service: nacos-cluster-8846
-      
   nacos-cluster-8848:
     extends:
       file: /data/docker/app/nacos/nacos-cluster-8848/docker-compose.yml
       service: nacos-cluster-8848
+EOF
 ```
 
 ## 4 在全局配置管理中启动所有的节点
 
 ```shell
-docker-compose -f /data/docker/app/global/docker-compose.yml up -d
+docker-compose -f /data/docker/app/nacos/docker-compose.yml up -d
 ```
 
