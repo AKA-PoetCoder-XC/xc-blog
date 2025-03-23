@@ -411,4 +411,4 @@ docker-compose -f /data/docker/app/nacos/docker-compose.yml up -d
 
 访问ip:port/nacos
 
-![image-20250323131930035](D:\project-xc\xc-blog\img\image-20250323131930035.png)
+![image-20250323131930035](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20250323131930035.png)
