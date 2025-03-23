@@ -1,5 +1,5 @@
 ---
-title: "Docker搭建Nacos集群模式"
+title: "Docker搭建Nacos单节点以及集群模式"
 layout: post
 date: 2025-03-20
 tags: [docker,nacos]
@@ -8,9 +8,11 @@ author: XieChen
 toc:  true
 ---
 
+**前言：**该教程需要在有mysql服务的前提下进行，可以参考博主上一篇文章[Docker搭建Mysql主从模式](https://aka-poetcoder-xc.github.io/xc-blog/%E8%BF%90%E7%BB%B4/2025/03/19/Docker%E6%90%AD%E5%BB%BAMysql%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F/)
+
 ## 1 导入nacos相关配置表
 
-注意：nacos相关数据表可能会随着时间更新，如果后面启动容器失败且报sql异常，说明表结构更新了，请前往nacos的github官网(https://github.com/alibaba/nacos/blob/master/distribution/conf/mysql-schema.sql)查看sql脚本
+注意：nacos相关数据表可能会随着时间更新，如果后面启动容器失败且报sql异常，说明表结构更新了，请前往nacos的github官网查看[sql脚本](https://github.com/alibaba/nacos/blob/master/distribution/conf/mysql-schema.sql)
 
 ```mysql
 /*
@@ -230,14 +232,14 @@ services:
     image: nacos/nacos-server
     container_name: nacos-standalone-8842
     environment:
-      - PREFER_HOST_MODE=ip
-      - MODE=standalone
-      - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=172.26.48.227
-      - MYSQL_SERVICE_PORT=3307
-      - MYSQL_SERVICE_DB_NAME=nacos_config
-      - MYSQL_SERVICE_USER=root
-      - MYSQL_SERVICE_PASSWORD=root
+      - PREFER_HOST_MODE=ip # 是否支持hostname，值为：hostname / ip，默认为：ip
+      - MODE=standalone # 部署模式，值为：cluster / standalone，默认为：cluster
+      - SPRING_DATASOURCE_PLATFORM=mysql # 所用数据库类型
+      - MYSQL_SERVICE_HOST=172.26.240.140 # 数据库ip
+      - MYSQL_SERVICE_DB_NAME=nacos_config # 数据库名称
+      - MYSQL_SERVICE_PORT=3307 # 数据库端口号
+      - MYSQL_SERVICE_USER=root # 数据库登录用户
+      - MYSQL_SERVICE_PASSWORD=root # 数据库登录密码
       - JVM_XMS=256m
       - JVM_XMX=256m
       - JVM_XMN=256m
@@ -246,17 +248,8 @@ services:
     privileged: true
     restart: always
 EOF
-```
 
-参数定义：
---network=host：设置网络模式为主机模式，容器启动后就可以使用主机的IP地址进行网络通信；
-PREFER_HOST_MODE：是否支持hostname，值为：hostname / ip，默认为：ip；
-MODE：部署模式，值为：cluster / standalone，默认为：cluster；
-SPRING_DATASOURCE_PLATFORM：standalone 支持 mysql，mysql / empty，默认为：empty；
-MYSQL_SERVICE_HOST：mysql 主节点ip；
-MYSQL_SERVICE_PORT：mysql 主节点端口；
-MYSQL_SERVICE_USER：mysql 主节点用户名；
-MYSQL_SERVICE_PASSWORD：mysql 主节点用户密码；
+```
 
 #### 2.2.3 启动单机nacos节点
 
@@ -267,88 +260,125 @@ docker-compose -f /data/docker/app/nacos/nacos-standalone-8842/docker-compose.ym
 docker-compose -f /data/docker/app/nacos/nacos-standalone-8842/docker-compose.yml up -d
 ```
 
-## 3 搭建nacos多节点
+## 3 搭建nacos多主机多节点集群
 
-多节点的搭建步骤和单节点一致，只不过启动配置略有不同
+nacos多节点可以是一个主机用docker启动多个节点，也可以是多个主机，每个主机用docker启动多个节点，以下操作以一个主机启动多个docker节点为例，多个主机只需要重复以下操作，更改对应的主机ip即可
 
-### 3.1 为每个节点各创建一个目录用于存放docker-compose.yml
+### 3.1 为每个节点创建单独目录
+
+在主机上为当前主机的每个容器创建一个单独的文件夹存放对应配置文件以及数据，名称以对外开放的端口号区分
 
 ```
 mkdir -p /data/docker/app/nacos/{nacos-cluster-8844,nacos-cluster-8846,nacos-cluster-8848}
 ```
 
-### 3.2 创建并编写docker-compose.yml文件
+### 3.2 配置每个节点的docker-compose.yml
 
-3.2.1 全局环境变量配置
+**注意：端口号的配置一定不能有重复的，如果NACOS_APPLICATION_PORT的=默认端口号8848-n，则ports:下面配置的所有端口号都必须是对应的默认端口号-n，默认端口号可参考[nacos-docker](https://github.com/nacos-group/nacos-docker/blob/master/example/cluster-ip.yaml)的github，目前的四个默认端口号是8848（主服务端口），9848（集群通信端口），9849（gRPC 通信端口），7848（RPC 通信端口 ）**
 
-```
-# 注意：NACOS_SERVERS、MYSQL_SERVICE_HOST、MYSQL_SERVICE_PORT中的ip和端口号要根据时间情况来配置
-NACOS_SERVERS=172.22.48.227:8844 172.22.48.227:8846 172.22.48.227:8848
-SPRING_DATASOURCE_PLATFORM=mysql
-MYSQL_SERVICE_HOST=172.22.48.227
-MYSQL_SERVICE_DB_NAME=nacos_config
-MYSQL_SERVICE_PORT=3307
-MYSQL_SERVICE_USER=root
-MYSQL_SERVICE_PASSWORD=root
-JVM_XMS=128m
-JVM_XMX=128m
-JVM_XMN=128m
-```
-
-
-
-#### 3.2.1 第一个节点
+#### 3.2.2 第一个节点
 
 ```shell
 cat > /data/docker/app/nacos/nacos-cluster-8844/docker-compose.yml << 'EOF'
 services:
   nacos-cluster-8844:
-    image: nacos/nacos-server
-    container_name: nacos-cluster-8844
+    image: nacos/nacos-server # 所用镜像
+    container_name: nacos-cluster-8844 # 节点（容器）名称
     ports:
-      - "8844:8848"
-      - "9844:9848"
-    env_file:
-      - /data/docker/app/nacos/nacos-cluster.env
+      - "7844:7844"
+      - "8844:8844"
+      - "9844:9844"
+      - "9845:9845"
     restart: on-failure
+    environment:
+      - NACOS_SERVER_IP=172.26.240.140 # 主机ip
+      - NACOS_APPLICATION_PORT=8844 # nacos主服务端口
+      - NACOS_SERVERS=172.26.240.140:8844 172.26.240.140:8846 172.26.240.140:8848 # 集群服务列表
+      - SPRING_DATASOURCE_PLATFORM=mysql # 所用数据库类型
+      - MYSQL_SERVICE_HOST=172.26.240.140 # 数据库ip
+      - MYSQL_SERVICE_DB_NAME=nacos_config # 数据库名称
+      - MYSQL_SERVICE_PORT=3307 # 数据库端口号
+      - MYSQL_SERVICE_USER=root # 数据库登录用户
+      - MYSQL_SERVICE_PASSWORD=root # 数据库登录密码
+      - JVM_XMS=128m
+      - JVM_XMX=128m
+      - JVM_XMN=128m
+      - NACOS_AUTH_ENABLE=true #开启鉴权认证
+      - NACOS_AUTH_IDENTITY_KEY=nacos #账号
+      - NACOS_AUTH_IDENTITY_VALUE=123456 #密码
+      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
 EOF
 ```
 
-#### 3.2.2 第二个节点
+#### 3.2.3 第二个节点
 
 ```shell
 cat > /data/docker/app/nacos/nacos-cluster-8846/docker-compose.yml << 'EOF'
 services:
   nacos-cluster-8846:
-    image: nacos/nacos-server
-    container_name: nacos-cluster-8846
+    image: nacos/nacos-server # 所用镜像
+    container_name: nacos-cluster-8846 # 节点（容器）名称
     ports:
-      - "8846:8848"
-      - "9846:9848"
-    env_file:
-      - /data/docker/app/nacos/nacos-cluster.env
+      - "7846:7846"
+      - "8846:8846"
+      - "9846:9846"
+      - "9847:9847"
     restart: on-failure
+    environment:
+      - NACOS_SERVER_IP=172.26.240.140 # 主机ip
+      - NACOS_APPLICATION_PORT=8846 # nacos主服务端口
+      - NACOS_SERVERS=172.26.240.140:8844 172.26.240.140:8846 172.26.240.140:8848 # 集群服务列表
+      - SPRING_DATASOURCE_PLATFORM=mysql # 所用数据库类型
+      - MYSQL_SERVICE_HOST=172.26.240.140 # 数据库ip
+      - MYSQL_SERVICE_DB_NAME=nacos_config # 数据库名称
+      - MYSQL_SERVICE_PORT=3307 # 数据库端口号
+      - MYSQL_SERVICE_USER=root # 数据库登录用户
+      - MYSQL_SERVICE_PASSWORD=root # 数据库登录密码
+      - JVM_XMS=128m
+      - JVM_XMX=128m
+      - JVM_XMN=128m
+      - NACOS_AUTH_ENABLE=true #开启鉴权认证
+      - NACOS_AUTH_IDENTITY_KEY=nacos #账号
+      - NACOS_AUTH_IDENTITY_VALUE=123456 #密码
+      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
 EOF
 ```
 
-#### 3.2.1 第三个节点
+#### 3.2.4 第三个节点
 
 ```shell
 cat > /data/docker/app/nacos/nacos-cluster-8848/docker-compose.yml << 'EOF'
 services:
   nacos-cluster-8848:
-    image: nacos/nacos-server
-    container_name: nacos-cluster-8848
+    image: nacos/nacos-server # 所用镜像
+    container_name: nacos-cluster-8848 # 节点（容器）名称
     ports:
+      - "7848:7848"
       - "8848:8848"
       - "9848:9848"
-    env_file:
-      - /data/docker/app/nacos/nacos-cluster.env
+      - "9849:9849"
     restart: on-failure
+    environment:
+      - NACOS_SERVER_IP=172.26.240.140 # 主机ip
+      - NACOS_APPLICATION_PORT=8848 # nacos主服务端口
+      - NACOS_SERVERS=172.26.240.140:8844 172.26.240.140:8846 172.26.240.140:8848 # 集群服务列表
+      - SPRING_DATASOURCE_PLATFORM=mysql # 所用数据库类型
+      - MYSQL_SERVICE_HOST=172.26.240.140 # 数据库ip
+      - MYSQL_SERVICE_DB_NAME=nacos_config # 数据库名称
+      - MYSQL_SERVICE_PORT=3307 # 数据库端口号
+      - MYSQL_SERVICE_USER=root # 数据库登录用户
+      - MYSQL_SERVICE_PASSWORD=root # 数据库登录密码
+      - JVM_XMS=128m
+      - JVM_XMX=128m
+      - JVM_XMN=128m
+      - NACOS_AUTH_ENABLE=true #开启鉴权认证
+      - NACOS_AUTH_IDENTITY_KEY=nacos #账号
+      - NACOS_AUTH_IDENTITY_VALUE=123456 #密码
+      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
 EOF
 ```
 
-### 3.3 在全局的docker-compose.yml引入以上docker-compose
+### 3.3 配置全局的docker-compose.yml
 
 备注：如果没有可以自己建立一个全局的docker-compose.yml用于管理需要一起启动的节点
 
@@ -377,3 +407,8 @@ EOF
 docker-compose -f /data/docker/app/nacos/docker-compose.yml up -d
 ```
 
+## 5 验证是否启动成功
+
+访问ip:port/nacos
+
+![image-20250323131930035](D:\project-xc\xc-blog\img\image-20250323131930035.png)

@@ -8,17 +8,13 @@ author: XieChen
 toc:  true
 ---
 
-## Docker搭建Mysql主从模式
-
-提示：按本教程操作需要有一定的docker基础，涉及到docker容器的拉取、启动、docker-compose容器编排、继承
+**前言**：按本教程操作需要有一定的docker基础，涉及到docker容器的拉取、启动、docker-compose容器编排
 
 ### 1 拉取MySQL镜像
 
 ```shell
 docker pull mysql:5.7
 ```
-
-
 
 ### 2 创建挂载目录
 
