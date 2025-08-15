@@ -245,19 +245,31 @@ exit
 ```shell
 # 1.先进入slave节点节点中
 docker exec -it mysql-slave-3308 bash
+```
+
+```shell
 # 2.登录到mysql
 mysql -uroot -proot
+```
+
+```shell
 # 3.设置如下配置
 change master to
-master_host='172.20.0.3',
-master_port=3306,
+master_host='172.22.48.227',
+master_port=3307,
 master_user='slave',
 master_password='123456',
 get_master_public_key=1,
 master_log_file='master-bin.000004',
 master_log_pos=749;
+```
+
+```shell
 # 4.启动slave节点
 start slave;
+```
+
+```shell
 # 5.查看slave的状态
 show slave status\G;
 ```
