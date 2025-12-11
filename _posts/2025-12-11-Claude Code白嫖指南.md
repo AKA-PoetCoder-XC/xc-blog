@@ -8,15 +8,21 @@ author: XieChen
 toc:  true
 ---
 
-1、打开github https://github.com/anthropics/claude-code 下载claude code（nodejs安装方式，需要提前安装 [Node.js 18+](https://nodejs.org/en/download/))
+## 一、claude code安装与配置
 
-```
+### 1、下载claude code
+
+打开github https://github.com/anthropics/claude-code 下载claude code（nodejs安装方式，需要提前安装 [Node.js 18+](https://nodejs.org/en/download/))
+
+```powershell
 npm install -g @anthropic-ai/claude-code
 ```
 
-2、在C:\Users\Administrator\.claude目录下新建文件settings.json
+### 2、配置claude code环境
 
-```
+在C:\Users\Administrator\.claude目录下新建文件settings.json
+
+```json
 {
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "123",
@@ -27,12 +33,22 @@ npm install -g @anthropic-ai/claude-code
 }
 ```
 
-3、使用discard注册登录zai.is账号 https://zai.is/auth?redirect=%2Fapi
+## 二、注册zai.is账号
 
-4、返回 https://zai.is/  页面登录，打开f12控制台，找到本地存放的token
+### 1、使用discard注册登录zai.is账号
+
+地址： https://zai.is/auth?redirect=%2Fapi
+
+### 2、登录zai.is
+
+返回 https://zai.is/  页面登录，打开f12控制台，找到本地存放的token
 ![image-20251211104500132](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211104500132.png)
 
-5、配置代理脚本token，脚本代码如下，自行保存为claude-code-proxy.js文件使用
+## 三、配置代理代理服务并启动
+
+### 1、配置代理脚本token
+
+脚本代码如下，自行保存为claude-code-proxy.js文件使用
 
 ```javascript
 /**
@@ -409,7 +425,7 @@ app.listen(PORT, () => {
 
 ```
 
-6、使用使用脚本启动代理服务
+### 2、启动代理服务
 
 ```
 npm install express
@@ -421,7 +437,9 @@ node 实际目录\claude-code-proxy.js
 代理服务启动成功效果如下
 ![image-20251211101548341](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211101548341.png)
 
-7、打开一个新的控制台启动claude code
+## 四、启动claude code
+
+### 1、打开一个新的控制台启动claude code
 
 ```
 claude
