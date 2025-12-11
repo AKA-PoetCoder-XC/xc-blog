@@ -8,11 +8,12 @@ author: XieChen
 toc:  true
 ---
 
-1、使用discard注册登录zai.is账号https://zai.is/auth?redirect=%2Fapi
-2、返回https://zai.is/ 页面登录，打开f12控制台，找到本地存放的token
+1、使用discard注册登录zai.is账号 https://zai.is/auth?redirect=%2Fapi
+
+2、返回 https://zai.is/  页面登录，打开f12控制台，找到本地存放的token
 ![image-20251211104500132](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211104500132.png)
 
-3、打开githubhttps://github.com/anthropics/claude-code下载claude code（nodejs安装方式，需要提前安装 [Node.js 18+](https://nodejs.org/en/download/)）
+3、打开github https://github.com/anthropics/claude-code 下载claude code（nodejs安装方式，需要提前安装 [Node.js 18+](https://nodejs.org/en/download/))
 
 ```
 npm install -g @anthropic-ai/claude-code
@@ -63,7 +64,7 @@ app.use(express.json({ limit: '50mb' }));
 // 目标 API 配置（OpenAI 格式）
 const TARGET_API = {
   baseUrl: 'https://zai.is/api/v1',
-  apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM2NmQ4OWIyLTBiMjQtNGQ1ZC04NGI3LWExNzE3ZmI5MWU1MSIsImV4cCI6MTc2NTQyNjM0OH0.1KffeljwtYnqg7XvhyozqkTMtnCkP4QDtlPtEJTnQ-0'
+  apiKey: '这里填登录zai.is后存储在本地的token,过期了就重新登录获取token'
 };
 
 // 缓存的模型列表
