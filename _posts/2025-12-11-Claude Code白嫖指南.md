@@ -427,3 +427,4 @@ node 实际目录\claude-code-proxy.js
 claude
 ```
 
+![image-20251211105848733](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211105848733.png)
