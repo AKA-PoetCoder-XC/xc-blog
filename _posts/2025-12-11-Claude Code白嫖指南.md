@@ -8,18 +8,13 @@ author: XieChen
 toc:  true
 ---
 
-1、使用discard注册登录zai.is账号 https://zai.is/auth?redirect=%2Fapi
-
-2、返回 https://zai.is/  页面登录，打开f12控制台，找到本地存放的token
-![image-20251211104500132](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211104500132.png)
-
-3、打开github https://github.com/anthropics/claude-code 下载claude code（nodejs安装方式，需要提前安装 [Node.js 18+](https://nodejs.org/en/download/))
+1、打开github https://github.com/anthropics/claude-code 下载claude code（nodejs安装方式，需要提前安装 [Node.js 18+](https://nodejs.org/en/download/))
 
 ```
 npm install -g @anthropic-ai/claude-code
 ```
 
-4、在C:\Users\Administrator\.claude目录下新建文件settings.json
+2、在C:\Users\Administrator\.claude目录下新建文件settings.json
 
 ```
 {
@@ -31,6 +26,11 @@ npm install -g @anthropic-ai/claude-code
   }
 }
 ```
+
+3、使用discard注册登录zai.is账号 https://zai.is/auth?redirect=%2Fapi
+
+4、返回 https://zai.is/  页面登录，打开f12控制台，找到本地存放的token
+![image-20251211104500132](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211104500132.png)
 
 5、配置代理脚本token，脚本代码如下，自行保存为claude-code-proxy.js文件使用
 
