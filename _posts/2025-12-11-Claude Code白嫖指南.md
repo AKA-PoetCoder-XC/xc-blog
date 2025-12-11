@@ -10,7 +10,7 @@ toc:  true
 
 1、使用discard注册登录zai.is账号https://zai.is/auth?redirect=%2Fapi
 2、返回https://zai.is/ 页面登录，打开f12控制台，找到本地存放的token
-![image-20251211104500132](D:\XieChen\project-xc\xc-blog\img\image-20251211104500132.png)
+![image-20251211104500132](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211104500132.png)
 
 3、打开githubhttps://github.com/anthropics/claude-code下载claude code（nodejs安装方式，需要提前安装 [Node.js 18+](https://nodejs.org/en/download/)）
 
@@ -418,7 +418,7 @@ node 实际目录\claude-code-proxy.js
 ```
 
 代理服务启动成功效果如下
-![image-20251211101548341](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20251211101548341.png)
+![image-20251211101548341](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20251211101548341.png)
 
 7、打开一个新的控制台启动claude code
 
