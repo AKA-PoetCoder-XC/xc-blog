@@ -13,7 +13,7 @@ toc:  true
 
 ### 1、注册主账号选择免费计划，获得100$抵扣金
 
-https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fus-east-1.console.aws.amazon.com%2Famazonq%2Fdeveloper%2Fhome%3Fca-oauth-flow-id%3De6df%26hashArgs%3D%2523%26isauthcode%3Dtrue%26oauthStart%3D1767492829798%26region%3Dus-east-1%26state%3DhashArgsFromTB_us-east-1_448a272658e62b6e&client_id=arn%3Aaws%3Asignin%3A%3A%3Aconsole%2Fcodewhisperer&forceMobileApp=0&code_challenge=b8_vLFOBjB71cVgA3SENRV3k-I2elulanzEDMMXYkms&code_challenge_method=SHA-256
+注册地址：https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fus-east-1.console.aws.amazon.com%2Famazonq%2Fdeveloper%2Fhome%3Fca-oauth-flow-id%3De6df%26hashArgs%3D%2523%26isauthcode%3Dtrue%26oauthStart%3D1767492829798%26region%3Dus-east-1%26state%3DhashArgsFromTB_us-east-1_448a272658e62b6e&client_id=arn%3Aaws%3Asignin%3A%3A%3Aconsole%2Fcodewhisperer&forceMobileApp=0&code_challenge=b8_vLFOBjB71cVgA3SENRV3k-I2elulanzEDMMXYkms&code_challenge_method=SHA-256
 
 ![image-20260104101427099](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20260104101427099.png)
 ![image-20260104101556853](https://raw.githubusercontent.com/AKA-PoetCoder-XC/xc-blog/main/img/image-20260104101556853.png)
