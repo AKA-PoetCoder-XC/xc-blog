@@ -1,10 +1,10 @@
 ---
 
-title: "Claude Opus4.5免费使用教程"
+title: "Kiro焚决Claude Opus4.5免费使用教程"
 layout: post
 date: 2026-01-04
 tags: [薅羊毛]
-category: [未知]
+category: [薅羊毛]
 author: XieChen
 toc:  true
 ---
